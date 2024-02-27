@@ -16,8 +16,8 @@ The system should allow the merchant to register with the Online Payment Platfor
 - Address: *required*
 - Country: *required*
 - Currency: *required* (only USD are supported for now).
-- Application URL: *required* (the URL of the merchant's e-commerce platform).
-- Webhook URL: *required* (the URL where the Online Payment Platform will send notifications, just one URL is supported for now).
+- Website: *optional* (the URL of the merchant's e-commerce platform).
+- Webhook URL: *optional* (the URL where the Online Payment Platform will send notifications, just one URL is supported for now).
 
 > The Application API Key and the Webhook API Key should be generated for the merchant and used to authenticate the requests.
 
@@ -63,9 +63,7 @@ In a real-world scenario, this should be managed by tokenization and encryption,
 The system should allow customers to update their payment methods. The customer should provide the following information:
 
 - Cardholder Name: *required*
-- Card Number: *required*
 - Expiration Date: *required*
-- Security Code: *required*
 - Address: *required*
 - Country: *required*
 - Default: *optional* (if the customer wants to set this card as the default payment method).

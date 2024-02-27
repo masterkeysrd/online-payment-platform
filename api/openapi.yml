@@ -1,0 +1,376 @@
+openapi: 3.0.3
+info:
+  title: Online Payment Platform API
+  description: This is the API for the Online Payment Platform
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Local server
+tags:
+  - name: customers
+    description: The customers API
+  - name: merchants
+    description: The merchants API
+  - name: payments
+    description: The payments API
+  - name: refunds
+    description: The refunds API
+  - name: webhooks
+    description: The webhooks of the platform
+paths:
+  /v1/merchants:
+    post:
+      tags:
+        - merchants
+      summary: Create a new merchant
+      operationId: createMerchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMerchantRequest'
+      responses:
+        '201':
+          description: Merchant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMerchantResponse'
+
+  /v1/customers:
+    post:
+      tags:
+        - customers
+      summary: Create a new customer
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCustomerResponse'
+  /v1/customers/{customerId}/payment-methods:
+    post:
+      tags:
+        - payments
+      summary: Create a new payment method for a customer
+      operationId: createPaymentMethod
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: The ID of the customer
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentMethodRequest'
+      responses:
+        '201':
+          description: Payment method created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePaymentMethodResponse'
+    get:
+      tags:
+        - payments
+      summary: Get all payment methods of a customer
+      operationId: getCustomerPaymentMethods
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: The ID of the customer
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment methods retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetCustomerPaymentMethodsResponse'
+  /v1/customers/{customerId}/payment-methods/{paymentMethodId}:
+    get:
+      tags:
+        - payments
+      summary: Get a payment method of a customer
+      operationId: getCustomerPaymentMethod
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: The ID of the customer
+          schema:
+            type: string
+          example: "cus_f3a2b3cN"
+        - name: paymentMethodId
+          in: path
+          required: true
+          description: The ID of the payment method
+          schema:
+            type: string
+          example: "pm_1J3z7a2eZvKYlo2Cf3a2b3cN"
+      responses:
+        '200':
+          description: Payment method retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCustomerPaymentMethodResponse'
+
+
+components:
+  schemas:
+    CreateMerchantRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Awesome Store"
+        email:
+          type: string
+          format: email
+          example: "management@awstore.com"
+        phone:
+          type: string
+          format: phone
+          example: "+1234567890"
+        address:
+          type: string
+          example: "123 Main St, New York, NY 10030"
+        country:
+          type: string
+          format: country
+          example: "US"
+        currency:
+          type: string
+          format: currency
+          example: "USD"
+        website:
+          type: string
+          format: uri
+          example: "https://awstore.com"
+        webhookUrl:
+          type: string
+          format: uri
+          example: "https://awstore.com/api/webhook"
+      required:
+        - name
+        - email
+        - phone
+        - address
+        - country
+        - currency
+    CreateMerchantResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "mrc_f3a2b3cN"
+        name:
+          type: string
+          example: "Awesome Store"
+        email:
+          type: string
+          format: email
+          example: "management@awstore.com"
+        phone:
+          type: string
+          format: phone
+          example: "+1234567890"
+        address:
+          type: string
+          example: "123 Main St, New York, NY 10030"
+        country:
+          type: string
+          format: country
+          example: "US"
+        currency:
+          type: string
+          format: currency
+          example: "USD"
+        website:
+          type: string
+          format: uri
+          example: "https://awstore.com"
+        webhookUrl:
+          type: string
+          format: uri
+          example: "https://awstore.com/api/webhook"
+        apiKey:
+          type: string
+          example: "sk_4eC39HqLyjWDarjtT1zdp7dc"
+        created:
+          type: number
+          format: int64
+          example: 1614556810
+    CreateCustomerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john_doe@email.com"
+        phone:
+          type: string
+          format: phone
+          example: "+1234567890"
+        address:
+          type: string
+          example: "123 Main St, New York, NY 10030"
+        country:
+          type: string
+          format: country
+          example: "US"
+    CreateCustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "cus_f3a2b3cN"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john_doe@email.com"
+        phone:
+          type: string
+          format: phone
+          example: "+1234567890"
+        address:
+          type: string
+          example: "123 Main St, New York, NY 10030"
+        country:
+          type: string
+          format: country
+          example: "US"
+        created:
+          type: number
+          format: int64
+          example: 1614556810
+    CreatePaymentMethodRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "card"
+        card:
+          $ref: '#/components/schemas/CreateCardRequest'
+      required:
+        - type
+        - card
+    CreateCardRequest:
+      type: object
+      properties:
+        number:
+          type: string
+          example: "4242424242424242"
+        expMonth:
+          type: integer
+          format: int32
+          example: 12
+        expYear:
+          type: integer
+          format: int32
+          example: 2023
+        cvc:
+          type: string
+          example: "123"
+    CreatePaymentMethodResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "pm_1J3z7a2eZvKYlo2Cf3a2b3cN"
+        type:
+          type: string
+          example: "card"
+        card:
+          $ref: '#/components/schemas/CreateCardResponse'
+        customer:
+          type: string
+          format: uuid
+          example: "cus_f3a2b3cN"
+        created:
+          type: number
+          format: int64
+          example: 1614556810
+    CreateCardResponse:
+      type: object
+      properties:
+        brand:
+          type: string
+          example: "Visa"
+        last4:
+          type: string
+          example: "4242"
+        expMonth:
+          type: integer
+          format: int32
+          example: 12
+        expYear:
+          type: integer
+          format: int32
+          example: 2023
+        country:
+          type: string
+          format: country
+          example: "US"
+    GetCustomerPaymentMethodsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "pm_1J3z7a2eZvKYlo2Cf3a2b3cN"
+        type:
+          type: string
+          example: "card"
+        card:
+          $ref: '#/components/schemas/CreateCardResponse'
+        created:
+          type: number
+          format: int64
+          example: 1614556810
+    GetCustomerPaymentMethodResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "pm_1J3z7a2eZvKYlo2Cf3a2b3cN"
+        type:
+          type: string
+          example: "card"
+        card:
+          $ref: '#/components/schemas/CreateCardResponse'
+        created:
+          type: number
+          format: int64
+          example: 1614556810
+          
