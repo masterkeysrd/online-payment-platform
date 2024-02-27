@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"github.com/masterkeysrd/online-payment-platform/api"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
+	server := api.NewServer()
+	server.Run()
 }
