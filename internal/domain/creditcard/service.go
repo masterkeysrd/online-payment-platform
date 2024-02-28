@@ -32,12 +32,14 @@ func NewService(params ServiceParams) Service {
 func (s *service) Create(request CreateCreditCardRequest) (CreateCreditCardResponse, error) {
 	creditCard := CreditCard{
 		ID:              generateId(),
+		MerchantID:      request.Merchant,
 		PaymentMethodId: request.PaymentMethod,
 		Brand:           "visa",
 		Number:          request.Number,
 		Last4:           request.Number[len(request.Number)-4:],
 		ExpMonth:        request.ExpMonth,
 		ExpYear:         request.ExpYear,
+		CVC:             request.CVC,
 		Country:         "US",
 		Created:         time.Now(),
 	}
