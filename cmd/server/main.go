@@ -4,11 +4,17 @@ import (
 	"github.com/masterkeysrd/online-payment-platform/api"
 	"github.com/masterkeysrd/online-payment-platform/api/controllers"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
+	"github.com/masterkeysrd/online-payment-platform/internal/infra/persistence/repositories"
 )
 
 func main() {
+	// Repositories
+	merchantRepository := repositories.NewMerchantRepository()
+
 	// Services
-	merchantService := merchant.NewService()
+	merchantService := merchant.NewService(merchant.ServiceParams{
+		Repository: merchantRepository,
+	})
 
 	// Controllers
 	merchantController := controllers.NewMerchantController(
