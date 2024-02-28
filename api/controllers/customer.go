@@ -59,8 +59,8 @@ func (c *CustomerController) Create(ctx *gin.Context) {
 }
 
 func (c *CustomerController) GetPaymentMethods(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Get payment methods",
+	ctx.JSON(http.StatusNotImplemented, gin.H{
+		"error": "Not implemented",
 	})
 }
 
