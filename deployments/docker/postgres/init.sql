@@ -39,3 +39,39 @@ CREATE TABLE "customers" (
 
 CREATE INDEX "idx_customers_merchant_id" ON "customers" ("merchant_id");
 CREATE INDEX "idx_customers_email" ON "customers" ("email");
+
+
+CREATE TABLE "payment_methods" (
+    "id" VARCHAR(255) NOT NULL,
+    "merchant_id" VARCHAR(255) NOT NULL,
+    "customer_id" VARCHAR(255) NOT NULL,
+    "type" VARCHAR(255) NOT NULL,
+    "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY ("id"),
+    CONSTRAINT "fk_payment_methods_merchant_id" FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id") ON DELETE CASCADE,
+    CONSTRAINT "fk_payment_methods_customer_id" FOREIGN KEY ("customer_id") REFERENCES "customers" ("id") ON DELETE CASCADE
+);
+
+CREATE INDEX "idx_payment_methods_merchant_id" ON "payment_methods" ("merchant_id");
+CREATE INDEX "idx_payment_methods_customer_id" ON "payment_methods" ("customer_id");
+
+CREATE TABLE "credit_cards" (
+    "id" VARCHAR(255) NOT NULL,
+    "merchant_id" VARCHAR(255) NOT NULL,
+    "payment_method_id" VARCHAR(255) NOT NULL,
+    "brand" VARCHAR(255) NOT NULL,
+    "number" VARCHAR(255) NOT NULL,
+    "expiration_month" VARCHAR(2) NOT NULL,
+    "expiration_year" VARCHAR(4) NOT NULL,
+    "country" CHAR(2) NOT NULL,
+    "cvc" VARCHAR(3) NOT NULL,
+    "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY ("id"),
+    CONSTRAINT "fk_credit_cards_merchant_id" FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id") ON DELETE CASCADE,
+    CONSTRAINT "fk_credit_cards_payment_method_id" FOREIGN KEY ("payment_method_id") REFERENCES "payment_methods" ("id") ON DELETE CASCADE
+);
+
+CREATE INDEX "idx_credit_cards_merchant_id" ON "credit_cards" ("merchant_id");
+CREATE INDEX "idx_credit_cards_payment_method_id" ON "credit_cards" ("payment_method_id");
