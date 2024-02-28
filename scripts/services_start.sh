@@ -2,4 +2,4 @@
 set -euo pipefail
 
 # Start Docker-Compose Services
-docker-compose -f ./deployments/docker/services.yml up -d
+docker-compose -f ./deployments/docker/services.yml up -d --build
