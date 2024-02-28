@@ -12,6 +12,7 @@ const (
 )
 
 type Service interface {
+	Get(request GetCreditCardRequest) (GetCreditCardResponse, error)
 	Create(request CreateCreditCardRequest) (CreateCreditCardResponse, error)
 }
 
@@ -27,6 +28,24 @@ func NewService(params ServiceParams) Service {
 	return &service{
 		repository: params.Repository,
 	}
+}
+
+func (s *service) Get(request GetCreditCardRequest) (GetCreditCardResponse, error) {
+	creditCard, err := s.repository.GetByPaymentMethod(request.Merchant, request.PaymentMethod)
+
+	if err != nil {
+		return GetCreditCardResponse{}, err
+	}
+
+	return GetCreditCardResponse{
+		ID:       creditCard.ID,
+		Brand:    creditCard.Brand,
+		Last4:    creditCard.Last4,
+		ExpMonth: creditCard.ExpMonth,
+		ExpYear:  creditCard.ExpYear,
+		Country:  creditCard.Country,
+		Created:  creditCard.Created.Unix(),
+	}, nil
 }
 
 func (s *service) Create(request CreateCreditCardRequest) (CreateCreditCardResponse, error) {
