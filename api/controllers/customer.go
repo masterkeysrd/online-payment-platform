@@ -5,19 +5,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/customer"
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/paymentmethod"
 )
 
 type CustomerController struct {
-	service customer.Service
+	customerService      customer.Service
+	paymentMethodService paymentmethod.Service
 }
 
 type CustomerControllerParams struct {
-	CustomerService customer.Service
+	CustomerService      customer.Service
+	PaymentMethodService paymentmethod.Service
 }
 
 func NewCustomerController(params CustomerControllerParams) *CustomerController {
 	return &CustomerController{
-		service: params.CustomerService,
+		customerService:      params.CustomerService,
+		paymentMethodService: params.PaymentMethodService,
 	}
 }
 
@@ -42,7 +46,7 @@ func (c *CustomerController) Create(ctx *gin.Context) {
 
 	request.Merchant = merchant
 
-	response, err := c.service.CreateCustomer(request)
+	response, err := c.customerService.CreateCustomer(request)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -61,9 +65,31 @@ func (c *CustomerController) GetPaymentMethods(ctx *gin.Context) {
 }
 
 func (c *CustomerController) AddPaymentMethod(ctx *gin.Context) {
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "Payment method added",
-	})
+	merchant := ctx.GetString("merchant")
+	customerId := ctx.Param("customerId")
+
+	var request paymentmethod.CreatePaymentMethodRequest
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	request.Merchant = merchant
+	request.Customer = customerId
+
+	response, err := c.paymentMethodService.Create(request)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
 }
 
 func (c *CustomerController) GetPaymentMethod(ctx *gin.Context) {

@@ -4,8 +4,10 @@ import (
 	"github.com/masterkeysrd/online-payment-platform/api"
 	"github.com/masterkeysrd/online-payment-platform/api/controllers"
 	"github.com/masterkeysrd/online-payment-platform/api/middlewares"
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/creditcard"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/customer"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/paymentmethod"
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/database"
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/persistence/repositories"
 )
@@ -22,6 +24,8 @@ func main() {
 	// Repositories
 	merchantRepository := repositories.NewMerchantRepository(db)
 	customerRepository := repositories.NewCustomerRepository(db)
+	creditcardRepository := repositories.NewCreditCardRepository(db)
+	paymentMethodRepository := repositories.NewPaymentMethodRepository(db)
 
 	// Services
 	merchantService := merchant.NewService(merchant.ServiceParams{
@@ -33,6 +37,15 @@ func main() {
 		MerchantService: merchantService,
 	})
 
+	creditCardService := creditcard.NewService(creditcard.ServiceParams{
+		Repository: creditcardRepository,
+	})
+
+	paymentMethodService := paymentmethod.NewService(paymentmethod.ServiceParams{
+		Repository:        paymentMethodRepository,
+		CreditCardService: creditCardService,
+	})
+
 	// Controllers
 	merchantController := controllers.NewMerchantController(
 		controllers.MerchantControllerParams{
@@ -42,7 +55,8 @@ func main() {
 
 	customerController := controllers.NewCustomerController(
 		controllers.CustomerControllerParams{
-			CustomerService: customerService,
+			CustomerService:      customerService,
+			PaymentMethodService: paymentMethodService,
 		},
 	)
 
