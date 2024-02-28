@@ -29,6 +29,8 @@ func (c *CustomerController) RegisterRoutes(router *gin.RouterGroup) {
 }
 
 func (c *CustomerController) Create(ctx *gin.Context) {
+	var merchant = ctx.GetString("merchant")
+
 	var request customer.CreateCustomerRequest
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -37,6 +39,8 @@ func (c *CustomerController) Create(ctx *gin.Context) {
 		})
 		return
 	}
+
+	request.Merchant = merchant
 
 	response, err := c.service.CreateCustomer(request)
 

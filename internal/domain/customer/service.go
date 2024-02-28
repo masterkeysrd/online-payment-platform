@@ -34,15 +34,9 @@ func NewService(params ServiceParams) Service {
 }
 
 func (s *service) CreateCustomer(request CreateCustomerRequest) (CreateCustomerResponse, error) {
-	merchantID, err := s.merchantService.GetIDByApiKey(request.MerchantKey)
-
-	if err != nil {
-		return CreateCustomerResponse{}, err
-	}
-
 	customer := Customer{
 		ID:         generateId(),
-		MerchantID: merchantID,
+		MerchantID: request.Merchant,
 		Name:       request.Name,
 		Email:      request.Email,
 		Phone:      request.Phone,
@@ -51,7 +45,7 @@ func (s *service) CreateCustomer(request CreateCustomerRequest) (CreateCustomerR
 		Created:    time.Now(),
 	}
 
-	err = s.repository.Create(&customer)
+	err := s.repository.Create(&customer)
 
 	if err != nil {
 		return CreateCustomerResponse{}, err

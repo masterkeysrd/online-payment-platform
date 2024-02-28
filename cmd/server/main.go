@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/masterkeysrd/online-payment-platform/api"
 	"github.com/masterkeysrd/online-payment-platform/api/controllers"
+	"github.com/masterkeysrd/online-payment-platform/api/middlewares"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/customer"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/database"
@@ -47,6 +48,6 @@ func main() {
 
 	server := api.NewServer()
 	server.RegisterController("/api/v1/merchants", merchantController)
-	server.RegisterController("/api/v1/customers", customerController)
+	server.RegisterControllerWithMiddleware("/api/v1/customers", customerController, middlewares.MerchantId(merchantService))
 	server.Run()
 }
