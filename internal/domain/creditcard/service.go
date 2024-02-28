@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	idPrefix = "cc_"
+	idPrefix = "cc"
 	idLength = 16
 )
 
