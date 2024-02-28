@@ -1,12 +1,12 @@
 package customer
 
 type CreateCustomerRequest struct {
-	MerchantKey string `json:"merchant_key"`
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	Phone       string `json:"phone"`
-	Address     string `json:"address"`
-	Country     string `json:"country"`
+	Merchant string `json:"merchant"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Address  string `json:"address"`
+	Country  string `json:"country"`
 }
 
 type CreateCustomerResponse struct {
