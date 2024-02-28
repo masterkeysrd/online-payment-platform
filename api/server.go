@@ -10,6 +10,7 @@ import (
 type Server interface {
 	Run()
 	RegisterController(path string, controller types.Controller)
+	RegisterControllerWithMiddleware(path string, controller types.Controller, middleware gin.HandlerFunc)
 }
 
 type server struct {
@@ -33,5 +34,11 @@ func (s *server) Run() {
 
 func (s *server) RegisterController(path string, controller types.Controller) {
 	router := s.router.Group(path)
+	controller.RegisterRoutes(router)
+}
+
+func (s *server) RegisterControllerWithMiddleware(path string, controller types.Controller, middleware gin.HandlerFunc) {
+	router := s.router.Group(path)
+	router.Use(middleware)
 	controller.RegisterRoutes(router)
 }
