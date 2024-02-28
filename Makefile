@@ -14,6 +14,9 @@ fmt:
 serve:
 	bash ./scripts/serve.sh
 
+simulator_start:
+	bash ./scripts/simulator_start.sh
+
 .PHONY: services_start
 services_start:
 	bash ./scripts/services_start.sh
