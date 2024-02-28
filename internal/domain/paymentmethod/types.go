@@ -24,6 +24,19 @@ type GetCreditCardResponse struct {
 	Created  int64  `json:"created"`
 }
 
+type GetPaymentMethodForPaymentRequest struct {
+	Merchant      string `json:"merchant"`
+	Customer      string `json:"customer"`
+	PaymentMethod string `json:"payment_method"`
+}
+
+type GetPaymentMethodForPaymentResponse struct {
+	ID       string `json:"id"`
+	Customer string `json:"customer"`
+	Type     string `json:"type"`
+	Account  string `json:"account"`
+}
+
 type CreatePaymentMethodRequest struct {
 	Merchant string                  `json:"merchant_id"`
 	Customer string                  `json:"customer"`

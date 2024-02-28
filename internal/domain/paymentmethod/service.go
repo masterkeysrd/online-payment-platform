@@ -15,6 +15,7 @@ const (
 
 type Service interface {
 	Get(request GetPaymentMethodRequest) (GetPaymentMethodResponse, error)
+	GetForPayment(request GetPaymentMethodForPaymentRequest) (GetPaymentMethodForPaymentResponse, error)
 	Create(request CreatePaymentMethodRequest) (CreatePaymentMethodResponse, error)
 }
 
@@ -58,6 +59,36 @@ func (s *service) Get(request GetPaymentMethodRequest) (GetPaymentMethodResponse
 		Type:     paymentMethod.Type,
 		Card:     card,
 		Created:  paymentMethod.Created.Unix(),
+	}, nil
+}
+
+func (s *service) GetForPayment(request GetPaymentMethodForPaymentRequest) (GetPaymentMethodForPaymentResponse, error) {
+	paymentMethod, err := s.repository.Get(request.Merchant, request.Customer, request.PaymentMethod)
+
+	if err != nil {
+		return GetPaymentMethodForPaymentResponse{}, err
+	}
+
+	var account string
+	switch paymentMethod.Type {
+	case CardType:
+		card, err := s.creditCardService.GetForPayment(creditcard.GetCreditCardForPaymentRequest{
+			Merchant:      request.Merchant,
+			PaymentMethod: paymentMethod.ID,
+		})
+
+		if err != nil {
+			return GetPaymentMethodForPaymentResponse{}, err
+		}
+
+		account = card.Number
+	}
+
+	return GetPaymentMethodForPaymentResponse{
+		ID:       paymentMethod.ID,
+		Customer: paymentMethod.CustomerID,
+		Type:     paymentMethod.Type,
+		Account:  account,
 	}, nil
 }
 
