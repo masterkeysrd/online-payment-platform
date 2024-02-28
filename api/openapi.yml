@@ -167,7 +167,7 @@ components:
           type: string
           format: uri
           example: "https://awstore.com"
-        webhookUrl:
+        webhook_url:
           type: string
           format: uri
           example: "https://awstore.com/api/webhook"
@@ -215,7 +215,7 @@ components:
           type: string
           format: uri
           example: "https://awstore.com/api/webhook"
-        apiKey:
+        api_key:
           type: string
           example: "sk_4eC39HqLyjWDarjtT1zdp7dc"
         created:
@@ -289,11 +289,11 @@ components:
         number:
           type: string
           example: "4242424242424242"
-        expMonth:
+        exp_month:
           type: integer
           format: int32
           example: 12
-        expYear:
+        exp_year:
           type: integer
           format: int32
           example: 2023
@@ -329,11 +329,11 @@ components:
         last4:
           type: string
           example: "4242"
-        expMonth:
+        exp_month:
           type: integer
           format: int32
           example: 12
-        expYear:
+        exp_year:
           type: integer
           format: int32
           example: 2023
@@ -373,4 +373,57 @@ components:
           type: number
           format: int64
           example: 1614556810
-          
+    CreatePaymentRequest:
+      type: object
+      properties:
+        customer:
+          type: string
+          example: "cus_f3a2b3cN"
+        description:
+          type: string
+          example: "Payment for order #12345"
+        amount:
+          type: integer
+          format: int64
+          example: 1000
+        currency:
+          type: string
+          format: currency
+          example: "USD"
+        payment_method:
+          type: string
+          format: uuid
+          example: "pm_1J3z7a2eZvKYlo2Cf3a2b3cN"
+    CreatePaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "pay_1J3z7a2eZvKYlo2Cf3a2b3cN"
+        customer:
+          type: string
+          format: uuid
+          example: "cus_f3a2b3cN"
+        description:
+          type: string
+          example: "Payment for order #12345"
+        amount:
+          type: integer
+          format: int64
+          example: 1000
+        currency:
+          type: string
+          format: currency
+          example: "USD"
+        payment_method:
+          type: string
+          format: uuid
+          example: "pm_1J3z7a2eZvKYlo2Cf3a2b3cN"
+        status:
+          type: string
+          example: "succeeded"
+        created:
+          type: number
+          format: int64
+          example: 1614556810

@@ -8,7 +8,7 @@ type CreateMerchantRequest struct {
 	Country    string `json:"country"`
 	Currency   string `json:"currency"`
 	Website    string `json:"website"`
-	WebhookUrl string `json:"webhookUrl"`
+	WebhookUrl string `json:"webhook_url"`
 }
 
 type CreateMerchantResponse struct {
@@ -20,7 +20,7 @@ type CreateMerchantResponse struct {
 	Country    string `json:"country"`
 	Currency   string `json:"currency"`
 	Website    string `json:"website"`
-	WebhookUrl string `json:"webhookUrl"`
-	ApiKey     string `json:"apiKey"`
+	WebhookUrl string `json:"webhook_url"`
+	ApiKey     string `json:"api_key"`
 	Created    int64  `json:"created"`
 }
