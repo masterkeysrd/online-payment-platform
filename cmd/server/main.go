@@ -7,6 +7,7 @@ import (
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/creditcard"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/customer"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/payment"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/paymentmethod"
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/database"
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/persistence/repositories"
@@ -25,6 +26,7 @@ func main() {
 	merchantRepository := repositories.NewMerchantRepository(db)
 	customerRepository := repositories.NewCustomerRepository(db)
 	creditcardRepository := repositories.NewCreditCardRepository(db)
+	paymentRepository := repositories.NewPaymentRepository(db)
 	paymentMethodRepository := repositories.NewPaymentMethodRepository(db)
 
 	// Services
@@ -46,6 +48,10 @@ func main() {
 		CreditCardService: creditCardService,
 	})
 
+	paymentService := payment.NewService(payment.ServiceParams{
+		Repository: paymentRepository,
+	})
+
 	// Controllers
 	merchantController := controllers.NewMerchantController(
 		controllers.MerchantControllerParams{
@@ -60,8 +66,15 @@ func main() {
 		},
 	)
 
+	paymentController := controllers.NewPaymentController(
+		controllers.PaymentControllerParams{
+			PaymentService: paymentService,
+		},
+	)
+
 	server := api.NewServer()
 	server.RegisterController("/api/v1/merchants", merchantController)
 	server.RegisterControllerWithMiddleware("/api/v1/customers", customerController, middlewares.MerchantId(merchantService))
+	server.RegisterControllerWithMiddleware("/api/v1/payments", paymentController, middlewares.MerchantId(merchantService))
 	server.Run()
 }
