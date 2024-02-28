@@ -7,12 +7,16 @@ type Service interface {
 }
 
 type service struct {
-	merchants []Merchant
+	repository Repository
 }
 
-func NewService() Service {
+type ServiceParams struct {
+	Repository Repository
+}
+
+func NewService(params ServiceParams) Service {
 	return &service{
-		merchants: []Merchant{},
+		repository: params.Repository,
 	}
 }
 
@@ -31,7 +35,11 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 		CreatedAt:  time.Now().Unix(),
 	}
 
-	s.merchants = append(s.merchants, merchant)
+	err := s.repository.Create(&merchant)
+
+	if err != nil {
+		return CreateMerchantResponse{}, err
+	}
 
 	return CreateMerchantResponse(merchant), nil
 }
