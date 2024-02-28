@@ -11,5 +11,7 @@ type Payment struct {
 	Amount          float64
 	Currency        string
 	Status          string
+	StatusReason    string
+	TransactionID   string
 	Created         time.Time
 }

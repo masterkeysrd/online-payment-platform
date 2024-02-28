@@ -4,6 +4,7 @@ import (
 	"github.com/masterkeysrd/online-payment-platform/api"
 	"github.com/masterkeysrd/online-payment-platform/api/controllers"
 	"github.com/masterkeysrd/online-payment-platform/api/middlewares"
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/acquiringbank"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/creditcard"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/customer"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
@@ -30,6 +31,10 @@ func main() {
 	paymentMethodRepository := repositories.NewPaymentMethodRepository(db)
 
 	// Services
+	acquiringBankService := acquiringbank.NewService(acquiringbank.Config{
+		URL: "http://localhost:8090",
+	})
+
 	merchantService := merchant.NewService(merchant.ServiceParams{
 		Repository: merchantRepository,
 	})
@@ -49,7 +54,9 @@ func main() {
 	})
 
 	paymentService := payment.NewService(payment.ServiceParams{
-		Repository: paymentRepository,
+		Repository:           paymentRepository,
+		PaymentMethodService: paymentMethodService,
+		AcquiringBankService: acquiringBankService,
 	})
 
 	// Controllers
@@ -72,8 +79,13 @@ func main() {
 		},
 	)
 
+	webhookController := controllers.NewWebhookController(
+		controllers.WebhookControllerParams{},
+	)
+
 	server := api.NewServer()
 	server.RegisterController("/api/v1/merchants", merchantController)
+	server.RegisterController("/webhook", webhookController)
 	server.RegisterControllerWithMiddleware("/api/v1/customers", customerController, middlewares.MerchantId(merchantService))
 	server.RegisterControllerWithMiddleware("/api/v1/payments", paymentController, middlewares.MerchantId(merchantService))
 	server.Run()

@@ -21,6 +21,10 @@ func (r *paymentRepository) Get(merchantID string, paymentID string) (payment.Pa
 	return p, err
 }
 
+func (r *paymentRepository) Update(request *payment.Payment) error {
+	return r.db.Save(request).Error
+}
+
 func (r *paymentRepository) Create(request *payment.Payment) error {
 	return r.db.Create(request).Error
 }

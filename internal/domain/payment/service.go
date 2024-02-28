@@ -1,8 +1,11 @@
 package payment
 
 import (
+	"errors"
 	"time"
 
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/acquiringbank"
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/paymentmethod"
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/id"
 )
 
@@ -17,16 +20,22 @@ type Service interface {
 }
 
 type service struct {
-	repository Repository
+	repository           Repository
+	paymentMethodService paymentmethod.Service
+	acquiringBankService acquiringbank.Service
 }
 
 type ServiceParams struct {
-	Repository Repository
+	Repository           Repository
+	PaymentMethodService paymentmethod.Service
+	AcquiringBankService acquiringbank.Service
 }
 
 func NewService(params ServiceParams) Service {
 	return &service{
-		repository: params.Repository,
+		repository:           params.Repository,
+		paymentMethodService: params.PaymentMethodService,
+		acquiringBankService: params.AcquiringBankService,
 	}
 }
 
@@ -59,6 +68,7 @@ func (s *service) Create(request CreatePaymentRequest) (CreatePaymentResponse, e
 		Amount:          request.Amount,
 		Currency:        request.Currency,
 		Status:          "pending",
+		StatusReason:    "pending to send to acquiring bank",
 		Created:         time.Now(),
 	}
 
@@ -66,6 +76,42 @@ func (s *service) Create(request CreatePaymentRequest) (CreatePaymentResponse, e
 
 	if err != nil {
 		return CreatePaymentResponse{}, err
+	}
+
+	paymentMethod, err := s.paymentMethodService.GetForPayment(paymentmethod.GetPaymentMethodForPaymentRequest{
+		Merchant:      request.Merchant,
+		PaymentMethod: request.PaymentMethod,
+		Customer:      request.Customer,
+	})
+
+	if err != nil {
+		return CreatePaymentResponse{}, errors.Join(errors.New("error getting payment method"), err)
+	}
+
+	response, err := s.acquiringBankService.CreateTransaction(acquiringbank.CreateTransactionRequest{
+		Sender: paymentMethod.Account,
+		// TODO: Replace with merchant account
+		Recipient:   "acquiring_bank-mock",
+		Description: payment.Description,
+		Amount:      payment.Amount,
+	})
+
+	if err != nil {
+		payment.Status = "failed"
+		payment.StatusReason = err.Error()
+
+		if err := s.repository.Update(&payment); err != nil {
+			return CreatePaymentResponse{}, errors.Join(errors.New("error updating payment"), err)
+		}
+	}
+
+	if response.ID != "" {
+		payment.TransactionID = response.ID
+		payment.StatusReason = "transaction sent to acquiring bank"
+
+		if err := s.repository.Update(&payment); err != nil {
+			return CreatePaymentResponse{}, errors.Join(errors.New("error updating payment"), err)
+		}
 	}
 
 	return CreatePaymentResponse{
