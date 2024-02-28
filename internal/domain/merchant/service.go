@@ -1,6 +1,10 @@
 package merchant
 
-import "time"
+import (
+	"time"
+
+	"github.com/masterkeysrd/online-payment-platform/internal/infra/id"
+)
 
 type Service interface {
 	CreateMerchant(request CreateMerchantRequest) (CreateMerchantResponse, error)
@@ -22,7 +26,7 @@ func NewService(params ServiceParams) Service {
 
 func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantResponse, error) {
 	merchant := Merchant{
-		ID:         "mrc_fa7d3f8d",
+		ID:         id.Generate("mrc", 14),
 		Name:       request.Name,
 		Email:      request.Email,
 		Phone:      request.Phone,
@@ -42,16 +46,16 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 	}
 
 	return CreateMerchantResponse{
-		ID: merchant.ID,
-		Name: merchant.Name,
-		Email: merchant.Email,
-		Phone: merchant.Phone,
-		Address: merchant.Address,
-		Country: merchant.Country,
-		Currency: merchant.Currency,
-		Website: merchant.Website,
+		ID:         merchant.ID,
+		Name:       merchant.Name,
+		Email:      merchant.Email,
+		Phone:      merchant.Phone,
+		Address:    merchant.Address,
+		Country:    merchant.Country,
+		Currency:   merchant.Currency,
+		Website:    merchant.Website,
 		WebhookUrl: merchant.WebhookUrl,
-		ApiKey: merchant.ApiKey,
-		Created: merchant.Created.Unix(),
+		ApiKey:     merchant.ApiKey,
+		Created:    merchant.Created.Unix(),
 	}, nil
 }
