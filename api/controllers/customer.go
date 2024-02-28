@@ -4,13 +4,21 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/customer"
 )
 
 type CustomerController struct {
+	service customer.Service
 }
 
-func NewCustomerController() *CustomerController {
-	return &CustomerController{}
+type CustomerControllerParams struct {
+	CustomerService customer.Service
+}
+
+func NewCustomerController(params CustomerControllerParams) *CustomerController {
+	return &CustomerController{
+		service: params.CustomerService,
+	}
 }
 
 func (c *CustomerController) RegisterRoutes(router *gin.RouterGroup) {
@@ -21,9 +29,25 @@ func (c *CustomerController) RegisterRoutes(router *gin.RouterGroup) {
 }
 
 func (c *CustomerController) Create(ctx *gin.Context) {
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "Customer created",
-	})
+	var request customer.CreateCustomerRequest
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	response, err := c.service.CreateCustomer(request)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
 }
 
 func (c *CustomerController) GetPaymentMethods(ctx *gin.Context) {
