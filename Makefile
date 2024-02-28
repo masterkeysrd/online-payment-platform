@@ -14,8 +14,21 @@ fmt:
 serve:
 	bash ./scripts/serve.sh
 
+.PHONY: build
 simulator_start:
 	bash ./scripts/simulator_start.sh
+
+.PHONY: app_start
+app_start:
+	bash ./scripts/app_start.sh
+
+.PHONY: app_stop
+app_stop:
+	bash ./scripts/app_stop.sh
+
+.PHONY: app_clean
+app_clean:
+	bash ./scripts/app_clean.sh
 
 .PHONY: services_start
 services_start:
