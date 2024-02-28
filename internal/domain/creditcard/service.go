@@ -13,6 +13,7 @@ const (
 
 type Service interface {
 	Get(request GetCreditCardRequest) (GetCreditCardResponse, error)
+	GetForPayment(request GetCreditCardForPaymentRequest) (GetCreditCardForPaymentResponse, error)
 	Create(request CreateCreditCardRequest) (CreateCreditCardResponse, error)
 }
 
@@ -41,6 +42,25 @@ func (s *service) Get(request GetCreditCardRequest) (GetCreditCardResponse, erro
 		ID:       creditCard.ID,
 		Brand:    creditCard.Brand,
 		Last4:    creditCard.Last4,
+		ExpMonth: creditCard.ExpMonth,
+		ExpYear:  creditCard.ExpYear,
+		Country:  creditCard.Country,
+		Created:  creditCard.Created.Unix(),
+	}, nil
+}
+
+func (s *service) GetForPayment(request GetCreditCardForPaymentRequest) (GetCreditCardForPaymentResponse, error) {
+	creditCard, err := s.repository.GetByPaymentMethod(request.Merchant, request.PaymentMethod)
+
+	if err != nil {
+		return GetCreditCardForPaymentResponse{}, err
+	}
+
+	return GetCreditCardForPaymentResponse{
+		ID:       creditCard.ID,
+		Brand:    creditCard.Brand,
+		Last4:    creditCard.Last4,
+		Number:   creditCard.Number,
 		ExpMonth: creditCard.ExpMonth,
 		ExpYear:  creditCard.ExpYear,
 		Country:  creditCard.Country,
