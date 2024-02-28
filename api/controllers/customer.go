@@ -93,7 +93,24 @@ func (c *CustomerController) AddPaymentMethod(ctx *gin.Context) {
 }
 
 func (c *CustomerController) GetPaymentMethod(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Get payment method",
-	})
+	merchant := ctx.GetString("merchant")
+	customerId := ctx.Param("customerId")
+	paymentMethodId := ctx.Param("paymentMethodId")
+
+	request := paymentmethod.GetPaymentMethodRequest{
+		Merchant:      merchant,
+		Customer:      customerId,
+		PaymentMethod: paymentMethodId,
+	}
+
+	response, err := c.paymentMethodService.Get(request)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }

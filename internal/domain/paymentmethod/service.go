@@ -14,6 +14,7 @@ const (
 )
 
 type Service interface {
+	Get(request GetPaymentMethodRequest) (GetPaymentMethodResponse, error)
 	Create(request CreatePaymentMethodRequest) (CreatePaymentMethodResponse, error)
 }
 
@@ -32,6 +33,32 @@ func NewService(params ServiceParams) Service {
 		repository:        params.Repository,
 		creditCardService: params.CreditCardService,
 	}
+}
+
+func (s *service) Get(request GetPaymentMethodRequest) (GetPaymentMethodResponse, error) {
+	paymentMethod, err := s.repository.Get(request.Merchant, request.Customer, request.PaymentMethod)
+
+	if err != nil {
+		return GetPaymentMethodResponse{}, err
+	}
+
+	var card GetCreditCardResponse
+	switch paymentMethod.Type {
+	case CardType:
+		card, err = s.getCreditCard(request.Merchant, paymentMethod.ID)
+
+		if err != nil {
+			return GetPaymentMethodResponse{}, err
+		}
+	}
+
+	return GetPaymentMethodResponse{
+		ID:       paymentMethod.ID,
+		Customer: paymentMethod.CustomerID,
+		Type:     paymentMethod.Type,
+		Card:     card,
+		Created:  paymentMethod.Created.Unix(),
+	}, nil
 }
 
 func (s *service) Create(request CreatePaymentMethodRequest) (CreatePaymentMethodResponse, error) {
@@ -64,6 +91,27 @@ func (s *service) Create(request CreatePaymentMethodRequest) (CreatePaymentMetho
 		Type:     paymentMethod.Type,
 		Card:     createdCard,
 		Created:  paymentMethod.Created.Unix(),
+	}, nil
+}
+
+func (s *service) getCreditCard(merchant string, paymentMethod string) (GetCreditCardResponse, error) {
+	card, err := s.creditCardService.Get(creditcard.GetCreditCardRequest{
+		Merchant:      merchant,
+		PaymentMethod: paymentMethod,
+	})
+
+	if err != nil {
+		return GetCreditCardResponse{}, err
+	}
+
+	return GetCreditCardResponse{
+		ID:       card.ID,
+		Brand:    card.Brand,
+		Last4:    card.Last4,
+		ExpMonth: card.ExpMonth,
+		ExpYear:  card.ExpYear,
+		Country:  card.Country,
+		Created:  card.Created,
 	}, nil
 }
 
