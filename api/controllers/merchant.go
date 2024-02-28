@@ -36,7 +36,7 @@ func (c *MerchantController) Create(ctx *gin.Context) {
 		return
 	}
 
-	response, err := c.service.CreateMerchant(request)
+	response, err := c.service.Create(request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

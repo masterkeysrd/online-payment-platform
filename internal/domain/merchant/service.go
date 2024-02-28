@@ -14,7 +14,8 @@ const (
 )
 
 type Service interface {
-	CreateMerchant(request CreateMerchantRequest) (CreateMerchantResponse, error)
+	GetIDByApiKey(apiKey string) (string, error)
+	Create(request CreateMerchantRequest) (CreateMerchantResponse, error)
 }
 
 type service struct {
@@ -31,7 +32,7 @@ func NewService(params ServiceParams) Service {
 	}
 }
 
-func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantResponse, error) {
+func (s *service) Create(request CreateMerchantRequest) (CreateMerchantResponse, error) {
 	merchant := Merchant{
 		ID:         generateId(),
 		Name:       request.Name,
@@ -46,6 +47,7 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 		Created:    time.Now(),
 	}
 
+	// TODO: Validate request, and check currency == "USD"
 	err := s.repository.Create(&merchant)
 
 	if err != nil {
@@ -65,6 +67,16 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 		ApiKey:     merchant.ApiKey,
 		Created:    merchant.Created.Unix(),
 	}, nil
+}
+
+func (s *service) GetIDByApiKey(apiKey string) (string, error) {
+	merchant, err := s.repository.GetByApiKey(apiKey)
+
+	if err != nil {
+		return "", err
+	}
+
+	return merchant.ID, nil
 }
 
 func generateId() string {
