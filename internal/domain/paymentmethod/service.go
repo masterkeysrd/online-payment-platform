@@ -9,7 +9,7 @@ import (
 
 const (
 	CardType = "card"
-	idPrefix = "pm_"
+	idPrefix = "pm"
 	idLength = 16
 )
 
