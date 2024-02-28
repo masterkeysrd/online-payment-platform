@@ -8,8 +8,10 @@ import (
 func main() {
 	// Controllers
 	merchantController := controllers.NewMerchantController()
+	customerController := controllers.NewCustomerController()
 
 	server := api.NewServer()
 	server.RegisterController("/api/v1/merchants", merchantController)
+	server.RegisterController("/api/v1/customers", customerController)
 	server.Run()
 }
