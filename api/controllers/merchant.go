@@ -4,13 +4,22 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
 )
 
 type MerchantController struct {
+	service merchant.Service
 }
 
-func NewMerchantController() *MerchantController {
-	return &MerchantController{}
+type MerchantControllerParams struct {
+	Service merchant.Service
+}
+
+func NewMerchantController(params MerchantControllerParams) *MerchantController {
+	return &MerchantController{
+		service: params.Service,
+	}
 }
 
 func (c *MerchantController) RegisterRoutes(router *gin.RouterGroup) {
@@ -18,7 +27,22 @@ func (c *MerchantController) RegisterRoutes(router *gin.RouterGroup) {
 }
 
 func (c *MerchantController) Create(ctx *gin.Context) {
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "Merchant created",
-	})
+	var request merchant.CreateMerchantRequest
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	response, err := c.service.CreateMerchant(request)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
 }
