@@ -2,17 +2,17 @@ package repositories
 
 import (
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
+	"gorm.io/gorm"
 )
 
 type merchantRepository struct {
-	merchants []merchant.Merchant
+	db *gorm.DB
 }
 
-func NewMerchantRepository() merchant.Repository {
-	return &merchantRepository{}
+func NewMerchantRepository(db *gorm.DB) merchant.Repository {
+	return &merchantRepository{db}
 }
 
 func (r *merchantRepository) Create(merchant *merchant.Merchant) error {
-	r.merchants = append(r.merchants, *merchant)
-	return nil
+	return r.db.Create(merchant).Error
 }
