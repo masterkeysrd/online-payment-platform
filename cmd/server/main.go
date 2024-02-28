@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/masterkeysrd/online-payment-platform/api"
 	"github.com/masterkeysrd/online-payment-platform/api/controllers"
 	"github.com/masterkeysrd/online-payment-platform/api/middlewares"
@@ -16,11 +18,11 @@ import (
 
 func main() {
 	db := database.NewDatabase(&database.Config{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "postgres",
-		Password: "postgres",
-		Name:     "online_payment_platform",
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Name:     os.Getenv("DB_NAME"),
 	})
 
 	// Repositories
@@ -32,7 +34,7 @@ func main() {
 
 	// Services
 	acquiringBankService := acquiringbank.NewService(acquiringbank.Config{
-		URL: "http://localhost:8090",
+		URL: os.Getenv("ACQUIRING_BANK_URL"),
 	})
 
 	merchantService := merchant.NewService(merchant.ServiceParams{

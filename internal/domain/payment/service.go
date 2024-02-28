@@ -2,6 +2,7 @@ package payment
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/acquiringbank"
@@ -59,6 +60,8 @@ func (s *service) Get(request GetPaymentRequest) (GetPaymentResponse, error) {
 }
 
 func (s *service) Create(request CreatePaymentRequest) (CreatePaymentResponse, error) {
+	log.Println("[payment-service] creating payment")
+
 	payment := Payment{
 		ID:              generateID(),
 		MerchantID:      request.Merchant,
@@ -75,9 +78,11 @@ func (s *service) Create(request CreatePaymentRequest) (CreatePaymentResponse, e
 	err := s.repository.Create(&payment)
 
 	if err != nil {
+		log.Println("[payment-service] error creating payment", err)
 		return CreatePaymentResponse{}, err
 	}
 
+	log.Println("[payment-service] getting payment method")
 	paymentMethod, err := s.paymentMethodService.GetForPayment(paymentmethod.GetPaymentMethodForPaymentRequest{
 		Merchant:      request.Merchant,
 		PaymentMethod: request.PaymentMethod,
@@ -85,9 +90,11 @@ func (s *service) Create(request CreatePaymentRequest) (CreatePaymentResponse, e
 	})
 
 	if err != nil {
+		log.Println("[payment-service] error getting payment method", err)
 		return CreatePaymentResponse{}, errors.Join(errors.New("error getting payment method"), err)
 	}
 
+	log.Println("[payment-service] sending transaction to acquiring bank")
 	response, err := s.acquiringBankService.CreateTransaction(acquiringbank.CreateTransactionRequest{
 		Sender: paymentMethod.Account,
 		// TODO: Replace with merchant account
@@ -97,10 +104,13 @@ func (s *service) Create(request CreatePaymentRequest) (CreatePaymentResponse, e
 	})
 
 	if err != nil {
+		log.Println("[payment-service] error sending transaction to acquiring bank", err)
+
 		payment.Status = "failed"
 		payment.StatusReason = err.Error()
 
 		if err := s.repository.Update(&payment); err != nil {
+			log.Println("[payment-service] error updating payment", err)
 			return CreatePaymentResponse{}, errors.Join(errors.New("error updating payment"), err)
 		}
 	}
@@ -110,6 +120,7 @@ func (s *service) Create(request CreatePaymentRequest) (CreatePaymentResponse, e
 		payment.StatusReason = "transaction sent to acquiring bank"
 
 		if err := s.repository.Update(&payment); err != nil {
+			log.Println("[payment-service] error updating payment", err)
 			return CreatePaymentResponse{}, errors.Join(errors.New("error updating payment"), err)
 		}
 	}

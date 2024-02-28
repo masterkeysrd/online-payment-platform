@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -47,8 +48,7 @@ func main() {
 	router := gin.Default()
 
 	config := Config{
-		// webhookURL: os.Getenv("WEBHOOK_URL"),
-		webhookURL: "http://localhost:8080/webhook",
+		webhookURL: os.Getenv("WEBHOOK_URL"),
 	}
 
 	router.POST("/transactions", createTransaction(config))
