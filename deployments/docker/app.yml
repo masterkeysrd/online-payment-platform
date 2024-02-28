@@ -1,6 +1,11 @@
 name: online-payment-platform
 
 services:
+  server:
+    extends:
+      file: server.yml
+      service: server
+
   simulator:
     extends:
       file: simulator.yml

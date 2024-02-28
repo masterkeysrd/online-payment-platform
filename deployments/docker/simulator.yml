@@ -1,0 +1,13 @@
+name: online-payment-platform
+
+services:
+  simulator:
+    image: simulator
+    build:
+      context: ../../
+      dockerfile: deployments/docker/simulator/Dockerfile
+    environment:
+      - PORT=8090
+      - WEBHOOK_URL=http://online-payment-platform:8080/webhook
+    ports:
+      - 8090:8090
