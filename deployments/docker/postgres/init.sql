@@ -86,6 +86,11 @@ CREATE TABLE "payments" (
     "amount" DECIMAL(10, 2) NOT NULL,
     "currency" CHAR(3) NOT NULL,
     "status" VARCHAR(255) NOT NULL,
+    "status_reason" VARCHAR(255) NOT NULL DEFAULT "Pending payment",
+    "transaction_id" VARCHAR(255) NOT NULL,
+    "authorization_code" VARCHAR(255),
+    "response_code" VARCHAR(255),
+    "response_reason" VARCHAR(255),
     "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY ("id"),
