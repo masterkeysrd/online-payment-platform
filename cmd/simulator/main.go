@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -45,15 +46,25 @@ type TransactionData struct {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Error loading .env file using default environment variables")
+	}
+
+	port := os.Getenv("SIMULATOR_PORT")
+
+	if port == "" {
+		port = "8090"
+	}
+
 	router := gin.Default()
 
 	config := Config{
-		webhookURL: os.Getenv("WEBHOOK_URL"),
+		webhookURL: os.Getenv("SIMULATOR_WEBHOOK_URL"),
 	}
 
 	router.POST("/transactions", createTransaction(config))
 
-	router.Run(":8090")
+	router.Run(":" + port)
 }
 
 func createTransaction(config Config) gin.HandlerFunc {
