@@ -4,12 +4,21 @@ import (
 	"github.com/masterkeysrd/online-payment-platform/api"
 	"github.com/masterkeysrd/online-payment-platform/api/controllers"
 	"github.com/masterkeysrd/online-payment-platform/internal/domain/merchant"
+	"github.com/masterkeysrd/online-payment-platform/internal/infra/database"
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/persistence/repositories"
 )
 
 func main() {
+	db := database.NewDatabase(&database.Config{
+		Host:     "localhost",
+		Port:     "5432",
+		User:     "postgres",
+		Password: "postgres",
+		Name:     "online_payment_platform",
+	})
+
 	// Repositories
-	merchantRepository := repositories.NewMerchantRepository()
+	merchantRepository := repositories.NewMerchantRepository(db)
 
 	// Services
 	merchantService := merchant.NewService(merchant.ServiceParams{
