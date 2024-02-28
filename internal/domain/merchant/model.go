@@ -1,5 +1,7 @@
 package merchant
 
+import "time"
+
 type Merchant struct {
 	ID         string
 	Name       string
@@ -11,5 +13,5 @@ type Merchant struct {
 	Website    string
 	WebhookUrl string
 	ApiKey     string
-	CreatedAt  int64
+	Created    time.Time `gorm:"default:CURRENT_TIMESTAMP()"`
 }

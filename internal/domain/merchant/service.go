@@ -32,7 +32,7 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 		Website:    request.Website,
 		WebhookUrl: request.WebhookUrl,
 		ApiKey:     "sk_test_4eC39HqLyjWDarjtT1zdp7dc",
-		CreatedAt:  time.Now().Unix(),
+		Created:    time.Now(),
 	}
 
 	err := s.repository.Create(&merchant)
@@ -41,5 +41,17 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 		return CreateMerchantResponse{}, err
 	}
 
-	return CreateMerchantResponse(merchant), nil
+	return CreateMerchantResponse{
+		ID: merchant.ID,
+		Name: merchant.Name,
+		Email: merchant.Email,
+		Phone: merchant.Phone,
+		Address: merchant.Address,
+		Country: merchant.Country,
+		Currency: merchant.Currency,
+		Website: merchant.Website,
+		WebhookUrl: merchant.WebhookUrl,
+		ApiKey: merchant.ApiKey,
+		Created: merchant.Created.Unix(),
+	}, nil
 }

@@ -22,5 +22,5 @@ type CreateMerchantResponse struct {
 	Website    string `json:"website"`
 	WebhookUrl string `json:"webhookUrl"`
 	ApiKey     string `json:"apiKey"`
-	CreatedAt  int64  `json:"createdAt"`
+	Created    int64  `json:"created"`
 }
