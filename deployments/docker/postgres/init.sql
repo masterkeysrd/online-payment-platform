@@ -76,3 +76,24 @@ CREATE TABLE "credit_cards" (
 
 CREATE INDEX "idx_credit_cards_merchant_id" ON "credit_cards" ("merchant_id");
 CREATE INDEX "idx_credit_cards_payment_method_id" ON "credit_cards" ("payment_method_id");
+
+CREATE TABLE "payments" (
+    "id" VARCHAR(255) NOT NULL,
+    "merchant_id" VARCHAR(255) NOT NULL,
+    "customer_id" VARCHAR(255) NOT NULL,
+    "payment_method_id" VARCHAR(255) NOT NULL,
+    "description" VARCHAR(255) NOT NULL,
+    "amount" DECIMAL(10, 2) NOT NULL,
+    "currency" CHAR(3) NOT NULL,
+    "status" VARCHAR(255) NOT NULL,
+    "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY ("id"),
+    CONSTRAINT "fk_payments_merchant_id" FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id") ON DELETE CASCADE,
+    CONSTRAINT "fk_payments_customer_id" FOREIGN KEY ("customer_id") REFERENCES "customers" ("id") ON DELETE CASCADE,
+    CONSTRAINT "fk_payments_payment_method_id" FOREIGN KEY ("payment_method_id") REFERENCES "payment_methods" ("id") ON DELETE CASCADE
+);
+
+CREATE INDEX "idx_payments_merchant_id" ON "payments" ("merchant_id");
+CREATE INDEX "idx_payments_customer_id" ON "payments" ("customer_id");
+CREATE INDEX "idx_payments_payment_method_id" ON "payments" ("payment_method_id");
