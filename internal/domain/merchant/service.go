@@ -6,6 +6,13 @@ import (
 	"github.com/masterkeysrd/online-payment-platform/internal/infra/id"
 )
 
+const (
+	idPrefix        = "mrc"
+	idLength        = 14
+	secretKeyPrefix = "sk"
+	secretKeyLength = 24
+)
+
 type Service interface {
 	CreateMerchant(request CreateMerchantRequest) (CreateMerchantResponse, error)
 }
@@ -26,7 +33,7 @@ func NewService(params ServiceParams) Service {
 
 func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantResponse, error) {
 	merchant := Merchant{
-		ID:         id.Generate("mrc", 14),
+		ID:         generateId(),
 		Name:       request.Name,
 		Email:      request.Email,
 		Phone:      request.Phone,
@@ -35,7 +42,7 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 		Currency:   request.Currency,
 		Website:    request.Website,
 		WebhookUrl: request.WebhookUrl,
-		ApiKey:     "sk_test_4eC39HqLyjWDarjtT1zdp7dc",
+		ApiKey:     generateSecretKey(),
 		Created:    time.Now(),
 	}
 
@@ -58,4 +65,12 @@ func (s *service) CreateMerchant(request CreateMerchantRequest) (CreateMerchantR
 		ApiKey:     merchant.ApiKey,
 		Created:    merchant.Created.Unix(),
 	}, nil
+}
+
+func generateId() string {
+	return id.Generate(idPrefix, idLength)
+}
+
+func generateSecretKey() string {
+	return id.Generate(secretKeyPrefix, secretKeyLength)
 }
