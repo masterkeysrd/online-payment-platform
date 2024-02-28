@@ -69,6 +69,7 @@ CREATE TABLE "credit_cards" (
     "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY ("id"),
+    CONSTRAINT "unique_payment_method_id" UNIQUE ("payment_method_id"), -- Enforce one-to-one relationship
     CONSTRAINT "fk_credit_cards_merchant_id" FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id") ON DELETE CASCADE,
     CONSTRAINT "fk_credit_cards_payment_method_id" FOREIGN KEY ("payment_method_id") REFERENCES "payment_methods" ("id") ON DELETE CASCADE
 );
